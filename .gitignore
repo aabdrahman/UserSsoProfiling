@@ -23,6 +23,8 @@ bld/
 [Ll]og/
 [Ll]ogs/
 TestRazor/
+**/bin/
+**/obj/
 
 # .NET Core
 project.lock.json
