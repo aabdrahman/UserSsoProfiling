@@ -7,3 +7,4 @@ public interface ILoggerManager
     void LogWarn(string Message);
     void LogError(string Message);
 }
+
