@@ -1,4 +1,5 @@
-using System;
+using System.IO;
+using System.Runtime.CompilerServices;
 using Serilog;
 
 namespace LoggerService;
@@ -7,23 +8,39 @@ public class LoggerManager : ILoggerManager
 {
 
     private ILogger _logger = Log.ForContext<LoggerManager>();
-    public void LogDebug(string Message)
+    public void LogDebug(string Message, [CallerMemberName] string callerName = "", [CallerFilePath] string callerFile = "")
     {
-        _logger.Debug(Message);
+        var className = Path.GetFileNameWithoutExtension(callerFile);
+        _logger
+            .ForContext("ClassName", className)
+            .ForContext("MethodName", callerName)
+            .Debug(Message);
     }
 
-    public void LogError(string Message)
+    public void LogError(string Message, [CallerMemberName] string callerName = "", [CallerFilePath] string callerFile = "")
     {
-        _logger.Error(Message);
+        var className = Path.GetFileNameWithoutExtension(callerFile);
+        _logger
+            .ForContext("ClassName", className)
+            .ForContext("MethodName", callerName)
+            .Error(Message);
     }
 
-    public void LogInfo(string Message)
+    public void LogInfo(string Message, [CallerMemberName] string callerName = "", [CallerFilePath] string callerFile = "")
     {
-        _logger.Information(Message);
+        var className = Path.GetFileNameWithoutExtension(callerFile);
+        _logger
+            .ForContext("ClassName", className)
+            .ForContext("MethodName", callerName)
+            .Information(Message);
     }
 
-    public void LogWarn(string Message)
+    public void LogWarn(string Message, [CallerMemberName] string callerName = "", [CallerFilePath] string callerFile = "")
     {
-        _logger.Warning(Message);
+        var className = Path.GetFileNameWithoutExtension(callerFile);
+        _logger
+            .ForContext("ClassName", className)
+            .ForContext("MethodName", callerName)
+            .Warning(Message);
     }
 }
