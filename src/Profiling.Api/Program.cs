@@ -8,12 +8,15 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.Debug(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Debug, outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}")
-                .WriteTo.File("Log/log-.txt", Serilog.Events.LogEventLevel.Verbose, fileSizeLimitBytes: 1_000_000,
-                                rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true, buffered: true)
-                .CreateLogger();
-
+    .MinimumLevel.Debug()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File(
+        "Logs/log-.txt", 
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {ClassName}.{MethodName} - {Message:lj}{NewLine}{Exception}"
+    )
+    .CreateLogger();
 
 // Add services to the container.
 builder.Services.AddSingleton<DataContext>();
