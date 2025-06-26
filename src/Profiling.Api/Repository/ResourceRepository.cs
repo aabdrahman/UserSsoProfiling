@@ -1,4 +1,5 @@
 using System.Data;
+using System.Text.Json;
 using Dapper;
 using LoggerService;
 using Profiling.Api.Context;
@@ -31,9 +32,12 @@ public class ResourceRepository : IResourceRepository
         parameters.Add("Name", NewResource.Name, dbType: DbType.String);
         parameters.Add("NormalizedName", NewResource.Name.ToUpper(), dbType: DbType.String);
 
+        _loggerManager.LogInfo($"Open Connection....");
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Executing Ceate Resource - Query: {query} Parameter: {JsonSerializer.Serialize(parameters)}");
             var id = await connection.QuerySingleAsync<int>(query, parameters);
+            _loggerManager.LogInfo($"Resource Create Query Return : {id}");
 
             return new Resource { Id = id, Name = NewResource.Name, NormalizedName = NewResource.Name.ToUpper() };
         }
@@ -45,10 +49,12 @@ public class ResourceRepository : IResourceRepository
         var query = @"DELETE 
                         FROM [SsoProfiling].[dbo].[Resources]
                         WHERE Name = @NormalizedName;";
-
+        _loggerManager.LogInfo($"Open Connection....");
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Executing Delete Module - Query: {query} Parameters: {NormalizedName}");
             var result = await connection.ExecuteAsync(query, new { NormalizedName });
+            _loggerManager.LogInfo($"Resource Delete Query Return : {result}");
             return result;
         }
     }
@@ -59,10 +65,12 @@ public class ResourceRepository : IResourceRepository
                         ,[Name]
                         ,[NormalizedName]
                     FROM [SsoProfiling].[dbo].[Resources]";
-
+        _loggerManager.LogInfo($"Open Connection....");
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Executing Get Resource - Query: {query}");
             var resources = await connection.QueryAsync<Resource>(query);
+            _loggerManager.LogInfo($"Get Resource Query Return : {JsonSerializer.Serialize(resources)}");
             return resources.ToList();
         }
     }
@@ -75,10 +83,12 @@ public class ResourceRepository : IResourceRepository
                             ,[NormalizedName]
                         FROM [SsoProfiling].[dbo].[Resources]
                         WHERE NormalizedName = @NormalizedName";
-
+        _loggerManager.LogInfo($"Open Connection....");
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Executing Get Resource - Query: {query} Parameter: {NormalizedName}");
             var resource = await connection.QueryFirstOrDefaultAsync<Resource>(query, new { NormalizedName });
+            _loggerManager.LogInfo($"Get Resource By Name Query Return : {JsonSerializer.Serialize(resource)}");
             return resource;
         }
     }

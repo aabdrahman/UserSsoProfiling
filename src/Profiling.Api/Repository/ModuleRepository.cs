@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using Dapper;
 using LoggerService;
 using Profiling.Api.Context;
@@ -35,10 +36,13 @@ public class ModuleRepository : IModuleRepository
         parameters.Add("Name", NewModule.Name, System.Data.DbType.String);
         parameters.Add("NormalizedName", NewModule.Name.ToUpper(), System.Data.DbType.String);
         parameters.Add("ResourceName", NewModule.ResourceName.ToUpper(), System.Data.DbType.String);
+        _loggerManager.LogInfo($"Open Connection....");
 
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Executing Module Create query - {query}, Parameter: {JsonSerializer.Serialize(parameters)}");
             var id = await connection.QuerySingleAsync<int>(query, parameters);
+            _loggerManager.LogInfo($"Module Create Query Return : {id}");
 
             return new Module { Id = id, Name = NewModule.Name, NormalizedName = NewModule.Name.ToUpper(), Resource = NewModule.ResourceName };
         }
@@ -53,9 +57,13 @@ public class ModuleRepository : IModuleRepository
         var query = @"DELETE 
                         FROM [SsoProfiling].[dbo].[Module]
                         WHERE [NormalizedName] = @NormalizedName AND [Resource] = @ResourceNameParameter;";
+                        
+        _loggerManager.LogInfo($"Open Connection....");
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Execiuting Delete Module: {query} - Parameters: {JsonSerializer.Serialize(moduleToDelete)}");
             var result = await connection.ExecuteAsync(query, new { NormalizedName, ResourceNameParameter });
+            _loggerManager.LogInfo($"Returns: {result}");
             return result;
         }
     }
@@ -71,11 +79,13 @@ public class ModuleRepository : IModuleRepository
                             ,[NormalizedName]
                         FROM [SsoProfiling].[dbo].[Module]
                         WHERE [NormalizedName] = @NormalizedName";
-
+        _loggerManager.LogInfo($"Open Connection....");
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Executing Get Module By Name - Query: {query} Parameters: {Name}");
             var module = await connection.QueryFirstOrDefaultAsync<Module>(query, new { NormalizedName });
-            Console.WriteLine(module?.ToString());
+             _loggerManager.LogInfo($"Returns: {JsonSerializer.Serialize(module)}");
+            // Console.WriteLine(module?.ToString());
             return module;
         }
     }
@@ -89,10 +99,14 @@ public class ModuleRepository : IModuleRepository
                         ,[NormalizedName]
                     FROM [SsoProfiling].[dbo].[Module]
                     WHERE Resource = @FilterResource";
+        
+        _loggerManager.LogInfo($"Open Connection....");
 
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Executing Module By Resource - Query: {query} Parameter: {ResourceName}");
             var resourceModules = await connection.QueryAsync<Module>(query, new { FilterResource });
+            _loggerManager.LogInfo($"Returns: {JsonSerializer.Serialize(resourceModules)}");
             return resourceModules;
         }
     }
@@ -104,10 +118,14 @@ public class ModuleRepository : IModuleRepository
                         ,[Name]
                         ,[NormalizedName]
                     FROM [SsoProfiling].[dbo].[Module]";
+        
+        _loggerManager.LogInfo($"Open Connection....");
 
         using (var connection = _context.CreateConnection())
         {
+            _loggerManager.LogInfo($"Executing Get Modules - Query: {query}");
             var modules = await connection.QueryAsync<Module>(query);
+            _loggerManager.LogInfo($"Returns: {JsonSerializer.Serialize(modules)}");
             return modules.ToList();
         }
     }
