@@ -1,4 +1,7 @@
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using LoggerService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Profiling.Api.Contracts;
@@ -11,10 +14,12 @@ namespace Profiling.Api.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IRepositoryManager _repositoryManager;
+        private readonly ILoggerManager _loggerManager;
 
-        public UsersController(IRepositoryManager repositoryManager)
+        public UsersController(IRepositoryManager repositoryManager, ILoggerManager loggerManager)
         {
             _repositoryManager = repositoryManager;
+            _loggerManager = loggerManager;
         }
 
         [HttpPost("AddUserModules")]
@@ -22,12 +27,15 @@ namespace Profiling.Api.Controllers
         {
             try
             {
+                _loggerManager.LogInfo($"Adding User Module: Data - {JsonSerializer.Serialize(userModulesToAdd)}");
                 var result = await _repositoryManager.UserRepository.AddUserModule(userModulesToAdd);
+                _loggerManager.LogInfo($"Modules Added Successfully.");
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Adding Modules - {JsonSerializer.Serialize(userModulesToAdd)}: {JsonSerializer.Serialize(ex)}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -43,6 +51,7 @@ namespace Profiling.Api.Controllers
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Adding Resources - {JsonSerializer.Serialize(userResourcesToAdd)}: {JsonSerializer.Serialize(ex)}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -57,6 +66,7 @@ namespace Profiling.Api.Controllers
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Getting User Resources - {UserId}: {JsonSerializer.Serialize(ex)}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -71,6 +81,7 @@ namespace Profiling.Api.Controllers
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Getting User Modules - {UserId}: {JsonSerializer.Serialize(ex)}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -90,9 +101,10 @@ namespace Profiling.Api.Controllers
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Registering User - {JsonSerializer.Serialize(NewUser)}: {JsonSerializer.Serialize(ex)}");
                 if (ex is Microsoft.Data.SqlClient.SqlException sqlEx)
                     return StatusCode(400, sqlEx.Message);
-
+                
                 return StatusCode(500, ex.Message);
             }
         }
@@ -107,6 +119,7 @@ namespace Profiling.Api.Controllers
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Deleting User Resources - {JsonSerializer.Serialize(userResourcesToDelete)}: {JsonSerializer.Serialize(ex)}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -121,6 +134,7 @@ namespace Profiling.Api.Controllers
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Deleting User Modules - {JsonSerializer.Serialize(userModulesToDelete)}: {JsonSerializer.Serialize(ex)}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -135,6 +149,7 @@ namespace Profiling.Api.Controllers
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Deleting User - {UserId}: {JsonSerializer.Serialize(ex)}");
                 return StatusCode(500, ex.Message);
             }
         }
@@ -149,6 +164,7 @@ namespace Profiling.Api.Controllers
             }
             catch (Exception ex)
             {
+                _loggerManager.LogError($"Error Undeleting User - {UserId}: {JsonSerializer.Serialize(ex)}");
                 return StatusCode(500, ex.Message);
             }
         }
