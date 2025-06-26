@@ -29,7 +29,7 @@ namespace Profiling.Api.Controllers
             {
                 _loggerManager.LogInfo($"Adding User Module: Data - {JsonSerializer.Serialize(userModulesToAdd)}");
                 var result = await _repositoryManager.UserRepository.AddUserModule(userModulesToAdd);
-                _loggerManager.LogInfo($"Modules Added Successfully.");
+                _loggerManager.LogInfo($"Modules Added Successfully - {JsonSerializer.Serialize(userModulesToAdd)} : {result}");
 
                 return Ok(result);
             }
@@ -45,7 +45,9 @@ namespace Profiling.Api.Controllers
         {
             try
             {
+                _loggerManager.LogInfo($"Adding User Resource - {JsonSerializer.Serialize(userResourcesToAdd)}");
                 var result = await _repositoryManager.UserRepository.AddUserResource(userResourcesToAdd);
+                _loggerManager.LogInfo($"Adding User Resource Successfull - {JsonSerializer.Serialize(userResourcesToAdd)} : {result}");
 
                 return Ok(result);
             }
@@ -61,7 +63,9 @@ namespace Profiling.Api.Controllers
         {
             try
             {
+                _loggerManager.LogInfo($"Get User Resource - User ID: {UserId}");
                 var UserResources = await _repositoryManager.UserRepository.GetUserResources(UserId.ToUpper());
+                _loggerManager.LogInfo($"Get User Resource Successfull - {JsonSerializer.Serialize(UserResources)} : {UserId}");
                 return Ok(UserResources);
             }
             catch (Exception ex)
@@ -76,7 +80,9 @@ namespace Profiling.Api.Controllers
         {
             try
             {
+                _loggerManager.LogInfo($"Get User Modules - {UserId}");
                 var UserModules = await _repositoryManager.UserRepository.GetUserModules(UserId.ToUpper());
+                _loggerManager.LogInfo($"Get User Resource Successfull - {JsonSerializer.Serialize(UserModules)} : {UserId}");
                 return Ok(UserModules);
             }
             catch (Exception ex)
@@ -96,7 +102,9 @@ namespace Profiling.Api.Controllers
 
             try
             {
+                _loggerManager.LogInfo($"Register User: {JsonSerializer.Serialize(NewUser)}");
                 var createdUser = await _repositoryManager.UserRepository.Create(NewUser);
+                _loggerManager.LogInfo($"Register User Successfull - {JsonSerializer.Serialize(createdUser)}");
                 return Ok($"User Created: {createdUser}");
             }
             catch (Exception ex)
@@ -114,7 +122,9 @@ namespace Profiling.Api.Controllers
         {
             try
             {
+                _loggerManager.LogInfo($"Delete User Resources - {JsonSerializer.Serialize(userResourcesToDelete)}");
                 var result = await _repositoryManager.UserRepository.RemoveUserResourceAccess(userResourcesToDelete);
+                _loggerManager.LogInfo($"Delete User Resource Successfull - {JsonSerializer.Serialize(userResourcesToDelete)} :{result}");
                 return Ok(result);
             }
             catch (Exception ex)
@@ -129,7 +139,9 @@ namespace Profiling.Api.Controllers
         {
             try
             {
+                _loggerManager.LogInfo($"Delete User Modules - {JsonSerializer.Serialize(userModulesToDelete)}");
                 var result = await _repositoryManager.UserRepository.RemoveUserModuleAccess(userModulesToDelete);
+                _loggerManager.LogInfo($"Delete User Modules Successfull - {JsonSerializer.Serialize(userModulesToDelete)} : {result}");
                 return Ok(result);
             }
             catch (Exception ex)
@@ -144,7 +156,9 @@ namespace Profiling.Api.Controllers
         {
             try
             {
+                _loggerManager.LogInfo($"Delete User: {UserId}");
                 var result = await _repositoryManager.UserRepository.DeleteUser(UserId);
+                _loggerManager.LogInfo($"Delete User Successful - {UserId} : {result}");
                 return Ok(result);
             }
             catch (Exception ex)
@@ -159,7 +173,9 @@ namespace Profiling.Api.Controllers
         {
             try
             {
+                _loggerManager.LogInfo($"UnDelete User: {UserId}");
                 var result = await _repositoryManager.UserRepository.UnDeleteUser(UserId);
+                _loggerManager.LogInfo($"UnDelete User Successful - {UserId} : {result}");
                 return Ok(result);
             }
             catch (Exception ex)
