@@ -14,7 +14,7 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File(
         "Logs/log-.txt", 
         rollingInterval: RollingInterval.Day,
-        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {ClassName}.{MethodName} - {Message:lj}{NewLine}{Exception}"
+        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss}||{Level:u3}] [{ClassName}].[{MethodName}] - {Message:lj}{NewLine}{Exception}"
     )
     .CreateLogger();
 
