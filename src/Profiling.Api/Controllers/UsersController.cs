@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using LoggerService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Profiling.Api.Contracts;
@@ -11,6 +12,7 @@ namespace Profiling.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IRepositoryManager _repositoryManager;
@@ -112,7 +114,7 @@ namespace Profiling.Api.Controllers
                 _loggerManager.LogError($"Error Registering User - {JsonSerializer.Serialize(NewUser)}: {JsonSerializer.Serialize(ex)}");
                 if (ex is Microsoft.Data.SqlClient.SqlException sqlEx)
                     return StatusCode(400, sqlEx.Message);
-                
+
                 return StatusCode(500, ex.Message);
             }
         }

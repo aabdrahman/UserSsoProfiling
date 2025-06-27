@@ -1,5 +1,6 @@
 using System.Text.Json;
 using LoggerService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Profiling.Api.Contracts;
@@ -9,6 +10,7 @@ namespace Profiling.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ModulesController : ControllerBase
     {
         private readonly IRepositoryManager _repositoryManager;
@@ -46,8 +48,8 @@ namespace Profiling.Api.Controllers
                 var module = await _repositoryManager.ModuleRepository.GetByName(Name);
                 if (module is null)
                 {
-                     _loggerManager.LogError($"Module With Name: {Name} does not exist");
-                    return NotFound($"Module With Name: {Name} does not exist");   
+                    _loggerManager.LogError($"Module With Name: {Name} does not exist");
+                    return NotFound($"Module With Name: {Name} does not exist");
                 }
                 _loggerManager.LogInfo($"Module Fetched Successfully: {JsonSerializer.Serialize(module)}");
 
