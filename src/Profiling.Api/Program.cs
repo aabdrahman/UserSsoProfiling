@@ -2,6 +2,7 @@ using System.Text;
 using LoggerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Profiling.Api;
 using Profiling.Api.Context;
 using Profiling.Api.Contracts;
@@ -68,17 +69,50 @@ builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "User Profiling", Description = "User Profiling System API", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "User Profiling", Description = "User Profiling System API", Version = "v1" });
+
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Enter your Token here",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    };
+
+    options.AddSecurityDefinition("Bearer", securityScheme);
+
+    var securityRequirement = new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Id = "Bearer",
+                    Type = ReferenceType.SecurityScheme
+                },
+                Name = "Bearer"
+            },
+            new List<string>()
+        }
+    };
+
+    options.AddSecurityRequirement(securityRequirement);
 });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.UseSwagger();
-app.UseSwaggerUI(opts =>
-{
-    opts.SwaggerEndpoint("/swagger/v1/swagger.json", "User Profiling System API");
-    //opts.RoutePrefix = "VisitorManagementSystemApi";
+//Configure the HTTP request pipeline.
+
+app.UseSwagger(c => {
+    c.RouteTemplate = "UserProfiling/swagger/{documentname}/swagger.json";
+});
+app.UseSwaggerUI(c => {
+    c.SwaggerEndpoint("/UserProfiling/swagger/v1/swagger.json", "UserProfling");
+    c.RoutePrefix = "UserProfiling/swagger";
+    
 });
 
 app.UseExceptionHandler(opts => { });
