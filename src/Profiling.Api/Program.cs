@@ -36,9 +36,20 @@ builder.Services.AddScoped<IRepositoryManager, RepositoryManger>();
 
 builder.Services.AddControllers();
 
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "User Profiling", Description = "User Profiling System API", Version = "v1" });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI(opts =>
+{
+    opts.SwaggerEndpoint("/swagger/v1/swagger.json", "User Profiling System API");
+    //opts.RoutePrefix = "VisitorManagementSystemApi";
+});
 
 app.UseCors();
 
