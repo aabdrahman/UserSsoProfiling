@@ -2,6 +2,7 @@ using System.Text;
 using LoggerService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Profiling.Api;
 using Profiling.Api.Context;
 using Profiling.Api.Contracts;
 using Profiling.Api.Repository;
@@ -22,9 +23,12 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 // Add services to the container.
+
 builder.Services.AddSingleton<DataContext>();
 
 builder.Services.AddSingleton<ILoggerManager, LoggerManager>();
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddCors(options =>
 {
@@ -65,6 +69,8 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
+app.UseExceptionHandler(opts => { });
 
 app.UseCors();
 
