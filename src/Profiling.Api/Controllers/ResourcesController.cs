@@ -1,5 +1,6 @@
 using System.Text.Json;
 using LoggerService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Profiling.Api.Contracts;
@@ -9,6 +10,7 @@ namespace Profiling.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ResourcesController : ControllerBase
     {
         private readonly IRepositoryManager _repositoryManager;
@@ -66,7 +68,7 @@ namespace Profiling.Api.Controllers
         {
             try
             {
-                 _loggerManager.LogInfo($"Creating Resource - Resource: {JsonSerializer.Serialize(NewResource)}");
+                _loggerManager.LogInfo($"Creating Resource - Resource: {JsonSerializer.Serialize(NewResource)}");
                 var resource = await _repositoryManager.ResourceRepository.Create(NewResource);
                 return CreatedAtRoute("GetByResourceName", new { name = resource.NormalizedName }, resource);
             }
