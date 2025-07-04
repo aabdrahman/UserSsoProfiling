@@ -13,13 +13,15 @@ public class RepositoryManger : IRepositoryManager
 
     protected DataContext _context;
     private ILoggerManager _loggerManager;
+    private readonly IHttpContextAccessor _httpContext;
 
-    public RepositoryManger(DataContext context, ILoggerManager loggerManager)
+    public RepositoryManger(DataContext context, ILoggerManager loggerManager, IHttpContextAccessor httpContext)
     {
         _context = context;
         _loggerManager = loggerManager;
+        _httpContext = httpContext;
         _moduleRepository = new Lazy<IModuleRepository>(() => new ModuleRepository(_context, _loggerManager));
-        _resourceRepository = new Lazy<IResourceRepository>(() => new ResourceRepository(_context, _loggerManager));
+        _resourceRepository = new Lazy<IResourceRepository>(() => new ResourceRepository(_context, _loggerManager, _httpContext));
         _userRepository = new Lazy<IUserRepository>(() => new UserRepository(_context, _loggerManager));
     }
 

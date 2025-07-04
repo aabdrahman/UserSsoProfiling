@@ -13,11 +13,13 @@ public class ResourceRepository : IResourceRepository
 {
     private readonly DataContext _context;
     private readonly ILoggerManager _loggerManager;
+    private readonly IHttpContextAccessor _httpContext;
 
-    public ResourceRepository(DataContext context, ILoggerManager loggerManager)
+    public ResourceRepository(DataContext context, ILoggerManager loggerManager, IHttpContextAccessor httpContext)
     {
         _context = context;
         _loggerManager = loggerManager;
+        _httpContext = httpContext;
     }
 
     public async Task<Resource> Create(CreateResourceDto NewResource)
@@ -65,7 +67,8 @@ public class ResourceRepository : IResourceRepository
                         ,[Name]
                         ,[NormalizedName]
                     FROM [SsoProfiling].[dbo].[Resources]";
-        _loggerManager.LogInfo($"Open Connection....");
+        var userName = _httpContext.HttpContext.User.Claims.FirstOrDefault(x => x.Type == "Username").Value;
+        _loggerManager.LogInfo($"Open Connection.... by: {userName}");
         using (var connection = _context.CreateConnection())
         {
             _loggerManager.LogInfo($"Executing Get Resource - Query: {query}");
